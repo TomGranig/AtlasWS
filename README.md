@@ -5,6 +5,7 @@
 - [x] Simple and flexible API
 - [x] Support for HTTP/1.1 (HTTP/2.0 planned)
 - [x] Built in basic query parameter, body, and cookie parsing
+- [ ] Websocket support (planned)
 
 ## Example
 ```c++
