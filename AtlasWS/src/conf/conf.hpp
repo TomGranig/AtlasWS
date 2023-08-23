@@ -1,0 +1,37 @@
+/*
+
+    AtlasWS - A powerful web framework
+    Copyright (C) Tom Granig 2023. All rights reserved.
+
+*/
+
+
+#define NWS_DEFAULT_MIN_TX_BUFFER_SIZE 4096
+#define NWS_DEFAULT_MIN_RX_BUFFER_SIZE 4096
+#define NWS_DEFAULT_TX_BUFFER_REALLOCATION_OVERHEAD 4096
+#define NWS_DEFAULT_RX_BUFFER_REALLOCATION_OVERHEAD 4096
+#define NWS_DEFAULT_MAX_RX_BUFFER_SIZE 65536
+#define NWS_DEFAULT_MAX_CONCURRENT_REQUESTS 1000
+#define NWS_NO_IO_TIMEOUT_MILLIS 50000
+#define NWS_FILE_SERVE_TASK_MAX_TX_BUFFER_SIZE 50000
+#define SERVER_RX_BUFF_SIZE 32768
+
+#define METHOD_NAME_SIZE_LIMIT 50
+#define URL_SIZE_LIMIT 8192
+#define HTTP_VER_NAME_SIZE_LIMIT 10
+#define HEADER_NAME_SIZE_LIMIT 256
+#define HEADER_VALUE_SIZE_LIMIT 4096
+#define CONFIG_NUM_REQ_COOKIES 50
+
+#define PROTO_IDENTIFIER "HTTP/1.1"
+#define WEB_VERSION "v0.1"
+
+
+/*
+
+    Platform checks
+
+*/
+
+static_assert(sizeof(char) == 1, "This server requires a platform with 1 byte char width");
+
