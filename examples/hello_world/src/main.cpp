@@ -16,5 +16,6 @@ int main() {
     };
 
     // Pause the main thread so the server doesn't close
+    // You could do other things here as long as the main thread doesn't close
     pause();    
 }
