@@ -21,7 +21,9 @@ int main() {
     // This callback is called when an HTTP request is received
     server.onrequest = [&](auto& req, auto& res) {
         // Write "Hello, world!" to the client
-        atlas::write(res, "Hello, world!");
+        atlas::write_head(res, atlas::HTTP_OK, {{"Content-Type", "text/html"}});
+        atlas::write(res, "<h1>Hello, world!</h1>");
+        atlas::end(res);
     };
 
     // Pause the main thread so the server doesn't close
