@@ -35,7 +35,7 @@ int main() {
 
 ## Building
 A makefile is provided for building the library. Run `make` in the AtlasWS directory to build the library. The library will be built in the `AtlasWS/build` directory.
-Makefiles are also provided for building the examples. Run `make` in one of the example directories to build the example. To run the example, cd into the example's `build`` directory and run `./main`.
+Makefiles are also provided for building the examples. Run `make` in one of the example directories to build the example. To run the example, cd into the example's `build` directory and run `./main`.
 
 There are currently 3 examples:
 - `hello_world` - A simple "Hello, world!" example
