@@ -92,6 +92,7 @@ int main() {
     // You could do other things here as long as the main thread doesn't close
     pause();
 }
+```
 
 ## Building the Library and Examples
 A makefile is provided for building the library. Run `make` in the AtlasWS directory to build the library. The library will be built in the `AtlasWS/build` directory.
