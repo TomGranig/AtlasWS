@@ -1,0 +1,146 @@
+* {
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-SemiBold.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    background: #222;
+    margin: 0;
+    touch-action: none;
+    height: 100svh;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+input, button {
+    font-family: inherit;
+}
+
+#chat-log {
+    height: calc(100svh - 116px);
+    overflow-y: auto;
+    padding: 30px 10px 110px 10px;
+    touch-action: manipulation;
+    box-sizing: border-box;
+}
+
+#message {
+    width: calc(100% - 90px);
+    padding: 16px 20px;
+    border: none;
+    font-size: 16px;
+    background: #333;
+    outline: none;
+    color: #fff;
+    border-radius: 0;
+}
+
+#send {
+    width: 90px;
+    padding: 16px 20px;
+    border: none;
+    background: #333333;
+    color: #ff895c;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+    transition-duration: 0.2s;
+    touch-action: manipulation;
+}
+
+#send:hover {
+    color: #ffb091;
+    background: #444;
+}
+
+.inputgroup {
+    display: flex;
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 1px 1px 33px 0px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: 23px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(95% - 25px);
+}
+
+.chatcontainer {
+    text-align: left;
+    height: 100vh;
+}
+
+.message-container {
+    padding: 5px calc(2.5% + 12.5px);
+    margin: 1px 0;
+}
+
+.message-container .username {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 14px;
+    color: #fff;
+}
+
+.message-container .content {
+    border-radius: 14px;
+    display: inline-block;
+    max-width: 80%;
+    color: #ababab;
+}
+
+.message-container.current-user .username {
+    color: #ff895c;
+}
+
+.usernamecontainer {
+    display: inline-block;
+    overflow: hidden;
+    text-align: left;
+    padding: 5px calc(2.5% + 12.5px);
+}
+
+
+
+input#username {
+    padding: 10px 16px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #f9f9f9;
+    font-size: 14px;
+}
+
+.usernamelabel {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 15px 0px 15px;
+    color: #ff895c;
+}
+
+.header {
+    box-shadow: 1px 1px 33px 0px rgba(0, 0, 0, 0.17);
+    /* border-radius: 15px; */
+    background: #333;
+}

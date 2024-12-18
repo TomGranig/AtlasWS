@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AtlasWS Chat App</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="og:title" content="AtlasWS Chat App">
+    <meta name="og:description" content="A simple chat app built using the AtlasWS library WebSocket Server.">
+</head>
+
+<body>
+    <div class="chatcontainer">
+        <div class="header">
+            <div class="usernamecontainer">
+                <div class="usernamelabel">Username</div>
+                <input id="username" placeholder="Username...">
+            </div>
+        </div>
+        <div id="chat-log"></div>
+        <div class="inputgroup">
+            <input id="message" placeholder="Type a message...">
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
