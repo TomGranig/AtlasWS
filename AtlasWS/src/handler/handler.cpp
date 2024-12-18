@@ -16,7 +16,7 @@ namespace atlas {
             event.events |= EPOLLOUT;
         }
 
-        if (epoll_ctl(sess.server->ev_fd, EPOLL_CTL_MOD, sess.client_fd, &event) == -1) {
+        if (epoll_ctl(sess.server_instance->ev_fd, EPOLL_CTL_MOD, sess.client_fd, &event) == -1) {
             perror("epoll_ctl: client_socket");
             close(sess.client_fd);
             return;
@@ -160,35 +160,35 @@ namespace atlas {
 #ifdef __linux__
 
 
-        server->ev_fd = epoll_create1(0);
-        if (server->ev_fd == -1) {
+        server_instance->ev_fd = epoll_create1(0);
+        if (server_instance->ev_fd == -1) {
             perror("epoll_create1");
             exit(EXIT_FAILURE);
         }
 
         struct epoll_event event;
-        event.data.fd = server->sockfd;
+        event.data.fd = server_instance->sockfd;
         event.events = EPOLLIN;
-        if (epoll_ctl(server->ev_fd, EPOLL_CTL_ADD, server->sockfd, &event) == -1) {
+        if (epoll_ctl(server_instance->ev_fd, EPOLL_CTL_ADD, server_instance->sockfd, &event) == -1) {
             perror("epoll_ctl: listen_sock");
             exit(EXIT_FAILURE);
         }
 
-        struct epoll_event events[server->max_concurrent_requests];
+        struct epoll_event events[server_instance->max_concurrent_requests];
 
         while (true) {
-            int n = epoll_wait(server->ev_fd, events, server->max_concurrent_requests, -1);
+            int n = epoll_wait(server_instance->ev_fd, events, server_instance->max_concurrent_requests, -1);
             for (int i = 0; i < n; i++) {
-                if (events[i].data.fd == server->sockfd) {
-                    try_accept(server);
+                if (events[i].data.fd == server_instance->sockfd) {
+                    try_accept(server_instance);
                 }
                 else {
-                    socket_tick(server, server->sessions); // Handle socket I/O
+                    socket_tick(server_instance, server_instance->sessions); // Handle socket I/O
                 }
             }
         }
 
-        close(server->ev_fd);
+        close(server_instance->ev_fd);
 
 
 #elif defined(__APPLE__) || defined(__FreeBSD__)

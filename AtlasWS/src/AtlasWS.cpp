@@ -61,10 +61,6 @@ namespace atlas {
         server.ev_fd_timeout.tv_sec = 1;
         server.ev_fd_timeout.tv_nsec = 0;
 
-
-        // pthread_t http_server_tick_thread;
-        // pthread_create(&http_server_tick_thread, NULL, (void* (*)(void*))server_tick, &server);
-
         server.server_handler_thread = std::thread(server_tick, &server);
         
 
