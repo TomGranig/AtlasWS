@@ -11,9 +11,9 @@
 
 namespace atlas {
 
-    void socket_tick_all(server* server, http_session* socket_list_loc);
-    void socket_tick_one(server* server, http_session& sess);
-    void server_tick(server* server);
+    void socket_tick_all(server* server_instance, http_session* socket_list_loc);
+    void socket_tick_one(server* server_instance, http_session& sess);
+    void server_tick(server* server_instance);
     void update_event(http_session& sess, bool want_read, bool want_write);
     
 }

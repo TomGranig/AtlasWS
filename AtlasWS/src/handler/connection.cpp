@@ -27,7 +27,7 @@ namespace atlas {
         }
 
         sess.session_status = HTTP_CONNECTION_CLOSED;
-        sess.server->current_requests--;
+        sess.server_instance->current_requests--;
 
     }
 

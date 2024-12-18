@@ -6,9 +6,9 @@ namespace atlas {
 
 
     void receive_tick(http_session& sess) {
-        server* server = sess.server;
+        server* server_instance = sess.server_instance;
 
-        int32_t n = read(sess.client_fd, server->rx_buffer, conf::SERVER_RX_BUFF_SIZE);
+        int32_t n = read(sess.client_fd, server_instance->rx_buffer, conf::SERVER_RX_BUFF_SIZE);
         if (n < 0)
             return;
 
@@ -18,7 +18,7 @@ namespace atlas {
             return;
         }
 
-        sess.operation.last_io_t = server->curr_rtime;
+        sess.operation.last_io_t = server_instance->curr_rtime;
         sess.operation.received_bytes += n;
 
         if (sess.operation.received_bytes > sess.operation.client_rx_buffer_limit + conf::SERVER_RX_BUFF_SIZE) {
@@ -30,7 +30,7 @@ namespace atlas {
         if (append_size == 0)
             return;
 
-        sess.buffers.client_rx_buffer += std::string_view(server->rx_buffer, append_size);
+        sess.buffers.client_rx_buffer += std::string_view(server_instance->rx_buffer, append_size);
 
 
         if (sess.req.parsed_headers) {
@@ -52,7 +52,7 @@ namespace atlas {
 
             // look for the end of the headers sequence (\r\n\r\n)
             for (uint32_t i = 0; i < append_size; i++) {
-                const char new_char = server->rx_buffer[i];
+                const char new_char = server_instance->rx_buffer[i];
 
                 if (new_char == END_OF_HEADERS_SEQ[sess.http_parse_state.end_of_headers_seq_ctr])
                     sess.http_parse_state.end_of_headers_seq_ctr++;

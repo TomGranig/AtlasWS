@@ -2,9 +2,9 @@
 
 namespace atlas {
 
-    bool accept_new_socket(server* server, sockaddr_in* client_address, int32_t* client_socket) {
+    bool accept_new_socket(server* server_instance, sockaddr_in* client_address, int32_t* client_socket) {
         uint32_t client_addr_len = sizeof(sockaddr_in);
-        *client_socket = accept(server->sockfd, (struct sockaddr*)client_address, (socklen_t*)&client_addr_len);
+        *client_socket = accept(server_instance->sockfd, (struct sockaddr*)client_address, (socklen_t*)&client_addr_len);
         return *client_socket >= 0;
     }
 

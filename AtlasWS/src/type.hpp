@@ -59,12 +59,12 @@ namespace atlas {
         HTTP_CONNECTION_UPGRADED_TO_WEBSOCKET
     };
 
-    enum transfer_method {
+    enum http_transfer_encoding_method {
         NWS_TRANSFER_CHUNKED,
         NWS_TRANSFER_NORMAL,
     };
 
-    enum connection_lifetime {
+    enum http_connection_lifetime {
         NWS_CONNECTION_KEEPALIVE,
         NWS_CONNECTION_CLOSE
     };
@@ -134,7 +134,7 @@ namespace atlas {
             bool has_specified_content_length;
             uint32_t content_length;
             uint32_t received_content_length;
-            transfer_method method;
+            http_transfer_encoding_method method;
             uint32_t body_start_index;
         } body_transfer;
 
@@ -146,7 +146,7 @@ namespace atlas {
     };
 
     struct http_session {
-        server* server;
+        server* server_instance;
         sockaddr_in remote_addr;
         int32_t client_fd;
         http_connection_status session_status;
@@ -169,8 +169,8 @@ namespace atlas {
         } http_parse_state;
 
         struct {
-            transfer_method transfer_method;
-            connection_lifetime connection_lifetime;
+            http_transfer_encoding_method transfer_method;
+            http_connection_lifetime connection_lifetime;
 
             bool has_known_body_size;
             uint64_t body_expected_size;

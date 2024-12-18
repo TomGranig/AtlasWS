@@ -2,9 +2,9 @@
 
 namespace atlas {
 
-    websocket* get_new_websocket(server* server) {
-        for (uint16_t i = 0; i < server->max_num_websockets; i++) {
-            websocket* ws = server->websockets + i;
+    websocket* get_new_websocket(server* server_instance) {
+        for (uint16_t i = 0; i < server_instance->max_num_websockets; i++) {
+            websocket* ws = server_instance->websockets + i;
             if (ws->state == WS_STATE_NOEXIST) {
                 return ws;
             }
@@ -74,7 +74,7 @@ namespace atlas {
             {"sec-websocket-accept", sec_websocket_accept}
             });
 
-        websocket& ws = *get_new_websocket(req.session->server);
+        websocket& ws = *get_new_websocket(req.session->server_instance);
 
         ws.session = req.session;
         ws.state = WS_STATE_OPEN;
@@ -315,7 +315,7 @@ namespace atlas {
 
         constexpr size_t MAX_SINGLE_SEND_SIZE = 10000000;
 
-        server* server = sess.server;
+        server* server_instance = sess.server_instance;
         uint32_t send_size = sess.buffers.client_tx_buffer.length() - sess.operation.sent_bytes;
         if (send_size > MAX_SINGLE_SEND_SIZE)
             send_size = MAX_SINGLE_SEND_SIZE;
@@ -330,7 +330,7 @@ namespace atlas {
         if (bytes_sent <= 0)
             return;
 
-        sess.operation.last_io_t = server->curr_rtime;
+        sess.operation.last_io_t = server_instance->curr_rtime;
         sess.operation.sent_bytes += bytes_sent;
         sess.operation._DEBUG_TOTAL_BYTES_SENT += bytes_sent;
 
@@ -346,9 +346,9 @@ namespace atlas {
         if (sess.session_status != HTTP_CONNECTION_UPGRADED_TO_WEBSOCKET)
             return;
 
-        server* server = sess.server;
+        server* server_instance = sess.server_instance;
 
-        int32_t n = read(sess.client_fd, server->rx_buffer, conf::SERVER_RX_BUFF_SIZE);
+        int32_t n = read(sess.client_fd, server_instance->rx_buffer, conf::SERVER_RX_BUFF_SIZE);
         if (n < 0)
             return;
 
@@ -356,10 +356,10 @@ namespace atlas {
             close_connection(sess); // logic for disposing of websocket resources?
         }
 
-        sess.operation.last_io_t = server->curr_rtime;
+        sess.operation.last_io_t = server_instance->curr_rtime;
         sess.operation.received_bytes = 0;
 
-        parse_frame_segment(*(websocket*)sess.upgraded_proto_data, (uint8_t*)server->rx_buffer, n);
+        parse_frame_segment(*(websocket*)sess.upgraded_proto_data, (uint8_t*)server_instance->rx_buffer, n);
 
     }
 

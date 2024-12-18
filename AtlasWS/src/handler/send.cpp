@@ -14,7 +14,7 @@ namespace atlas {
 
         constexpr size_t MAX_SINGLE_SEND_SIZE = 10000000;
 
-        server* server = sess.server;
+        server* server_instance = sess.server_instance;
         uint32_t send_size = sess.buffers.client_tx_buffer.length() - sess.operation.sent_bytes;
         if (send_size > MAX_SINGLE_SEND_SIZE)
             send_size = MAX_SINGLE_SEND_SIZE;
@@ -29,7 +29,7 @@ namespace atlas {
         if (bytes_sent <= 0)
             return;
 
-        sess.operation.last_io_t = server->curr_rtime;
+        sess.operation.last_io_t = server_instance->curr_rtime;
         sess.operation.sent_bytes += bytes_sent;
         sess.operation._DEBUG_TOTAL_BYTES_SENT += bytes_sent;
 

@@ -7,7 +7,7 @@ namespace atlas {
         // Manually manage locking for the response handler
         req.session->buffers.mtx.unlock(); // Unlock before calling the handler
         try {
-            req.session->server->onrequest(req, req.session->res);
+            req.session->server_instance->onrequest(req, req.session->res);
         }
         catch (...) {
             req.session->buffers.mtx.lock();

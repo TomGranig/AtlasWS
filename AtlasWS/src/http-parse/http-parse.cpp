@@ -109,8 +109,6 @@ namespace atlas {
 
             str_skip_spaces(req.session->buffers.client_rx_buffer, index);
 
-            uint32_t tmpindex = index;
-
             if (!str_scan_until(req.session->buffers.client_rx_buffer, index, "\r\n", conf::HEADER_VALUE_SIZE_LIMIT, header_value))
                 return NWS_PARSE_FAIL_REQ_HEADER;
 

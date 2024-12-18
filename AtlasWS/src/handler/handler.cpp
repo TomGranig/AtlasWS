@@ -42,16 +42,16 @@ namespace atlas {
             EV_SET(&change[change_count++], sess.client_fd, EVFILT_WRITE, EV_DELETE, 0, 0, &sess);
         }
 
-        kevent(sess.server->ev_fd, change, change_count, NULL, 0, &sess.server->ev_fd_timeout);
+        kevent(sess.server_instance->ev_fd, change, change_count, NULL, 0, &sess.server_instance->ev_fd_timeout);
 
 #endif
 
     }
 
-    void try_accept(server* server) {
+    void try_accept(server* server_instance) {
         sockaddr_in client_address;
         socklen_t client_len = sizeof(client_address);
-        int32_t client_socket = accept(server->sockfd, (struct sockaddr*)&client_address, &client_len);
+        int32_t client_socket = accept(server_instance->sockfd, (struct sockaddr*)&client_address, &client_len);
 
         if (client_socket == -1) {
             if (errno != EWOULDBLOCK && errno != EAGAIN) {
@@ -62,14 +62,14 @@ namespace atlas {
 
         bool accepted = false;
 
-        for (uint32_t i = 0; i < server->max_concurrent_requests; i++) {
-            http_session& sess = server->sessions[i];
+        for (uint32_t i = 0; i < server_instance->max_concurrent_requests; i++) {
+            http_session& sess = server_instance->sessions[i];
             if (sess.session_status != HTTP_CONNECTION_CLOSED) // TODO: optimize traversal for large concurrency
                 continue;
 
             sess.remote_addr = client_address;
             sess.client_fd = client_socket;
-            sess.server = server;
+            sess.server_instance = server_instance;
             sess.upgraded_proto_data = nullptr;
 
             sess.operation.file_serve_task.active = false;
@@ -93,7 +93,7 @@ namespace atlas {
 
             accepted = true;
 
-            socket_tick_one(server, sess);
+            socket_tick_one(server_instance, sess);
 
             break;
         }
@@ -103,17 +103,17 @@ namespace atlas {
         }
     }
 
-    void socket_tick_all(server* server, http_session* sessions) {
-        server->curr_rtime = time();
+    void socket_tick_all(server* server_instance, http_session* sessions) {
+        server_instance->curr_rtime = time();
 
-        for (uint16_t i = 0; i < server->max_concurrent_requests; i++) {
+        for (uint16_t i = 0; i < server_instance->max_concurrent_requests; i++) {
             http_session& sess = sessions[i];
 
-            socket_tick_one(server, sess);
+            socket_tick_one(server_instance, sess);
         }
     }
 
-    void socket_tick_one(server* server, http_session& sess) {
+    void socket_tick_one(server* server_instance, http_session& sess) {
         // server->curr_rtime = time();
 
         std::unique_lock<std::mutex> lock(sess.buffers.mtx);
@@ -122,7 +122,7 @@ namespace atlas {
         if (sess.session_status == HTTP_CONNECTION_CLOSED)
             return;
 
-        if ((int64_t)server->curr_rtime - (int64_t)sess.operation.last_io_t > conf::NO_IO_TIMEOUT_MILLIS) {
+        if ((int64_t)server_instance->curr_rtime - (int64_t)sess.operation.last_io_t > conf::NO_IO_TIMEOUT_MILLIS) {
             std::cout << "Socket Timeout - Closing\n";
             close_connection(sess);
         }
@@ -156,7 +156,7 @@ namespace atlas {
 
 
 
-    void server_tick(server* server) {
+    void server_tick(server* server_instance) {
 #ifdef __linux__
 
 
@@ -194,8 +194,8 @@ namespace atlas {
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 
 
-        server->ev_fd = kqueue();
-        if (server->ev_fd == -1) {
+        server_instance->ev_fd = kqueue();
+        if (server_instance->ev_fd == -1) {
             perror("kqueue");
             exit(EXIT_FAILURE);
         }
@@ -203,41 +203,40 @@ namespace atlas {
         // std::cout << "kqueue created\n";
 
         struct kevent change;
-        EV_SET(&change, server->sockfd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+        EV_SET(&change, server_instance->sockfd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 
 
-        if (kevent(server->ev_fd, &change, 1, NULL, 0, NULL) == -1) {
+        if (kevent(server_instance->ev_fd, &change, 1, NULL, 0, NULL) == -1) {
             perror("kevent");
             exit(EXIT_FAILURE);
         }
 
-        struct kevent events[server->max_concurrent_requests];
+        struct kevent events[server_instance->max_concurrent_requests];
 
 
         while (true) {
-            server->curr_rtime = time();
+            server_instance->curr_rtime = time();
 
-            int nev = kevent(server->ev_fd, NULL, 0, events, server->max_concurrent_requests, &server->ev_fd_timeout);
+            int nev = kevent(server_instance->ev_fd, NULL, 0, events, server_instance->max_concurrent_requests, &server_instance->ev_fd_timeout);
             if (nev == -1) {
                 std::cout << "Error\n";
                 perror("kevent wait");
                 exit(EXIT_FAILURE);
             }
             else if (nev == 0) {
-                socket_tick_all(server, server->sessions);
-
+                socket_tick_all(server_instance, server_instance->sessions);
                 continue;
             }
 
             for (int i = 0; i < nev; i++) {
-                if (events[i].ident == server->sockfd)
-                    try_accept(server);
+                if ((int32_t)events[i].ident == server_instance->sockfd)
+                    try_accept(server_instance);
                 else
-                    socket_tick_one(server, *(http_session*)events[i].udata);
+                    socket_tick_one(server_instance, *(http_session*)events[i].udata);
             }
         }
 
-        close(server->ev_fd);
+        close(server_instance->ev_fd);
 
 
 #else
