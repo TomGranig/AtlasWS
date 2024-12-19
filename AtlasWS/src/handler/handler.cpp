@@ -8,7 +8,7 @@ namespace atlas {
 
         struct epoll_event event;
         event.data.fd = sess.client_fd;
-        event.events = EPOLLIN | EPOLLET;
+        event.events = EPOLLET;
         if (want_read) {
             event.events |= EPOLLIN;
         }
@@ -16,7 +16,7 @@ namespace atlas {
             event.events |= EPOLLOUT;
         }
 
-        if (epoll_ctl(sess.server_instance->ev_fd, EPOLL_CTL_MOD, sess.client_fd, &event) == -1) {
+        if (sess.client_fd != -1 && epoll_ctl(sess.server_instance->ev_fd, EPOLL_CTL_MOD, sess.client_fd, &event) == -1) {
             perror("epoll_ctl: client_socket");
             close(sess.client_fd);
             return;
@@ -197,7 +197,6 @@ namespace atlas {
         }
 
         close(server_instance->ev_fd);
-
 
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 
