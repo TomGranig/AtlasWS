@@ -6,21 +6,26 @@ namespace atlas {
 
 #ifdef __linux__
 
-        struct epoll_event event;
-        event.data.fd = sess.client_fd;
-        event.events = EPOLLET;
-        if (want_read) {
-            event.events |= EPOLLIN;
-        }
-        if (want_write) {
-            event.events |= EPOLLOUT;
-        }
+       struct epoll_event event;
+    event.data.fd = sess.client_fd;
+    event.events = EPOLLET;
+    if (want_read) {
+        event.events |= EPOLLIN;
+    }
+    if (want_write) {
+        event.events |= EPOLLOUT;
+    }
 
-        if (sess.client_fd != -1 && epoll_ctl(sess.server_instance->ev_fd, EPOLL_CTL_MOD, sess.client_fd, &event) == -1) {
+    if (sess.client_fd != -1) {
+        int op = sess.ev_added ? EPOLL_CTL_MOD : EPOLL_CTL_ADD;
+        if (epoll_ctl(sess.server_instance->ev_fd, op, sess.client_fd, &event) == -1) {
             perror("epoll_ctl: client_socket");
             close(sess.client_fd);
+            sess.client_fd = -1;
             return;
         }
+        sess.ev_added = true;
+    }
 
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 
@@ -79,6 +84,8 @@ namespace atlas {
 
             sess.req.session = &sess;
             sess.res.session = &sess;
+
+            sess.ev_added = false;
 
             sess.session_status = HTTP_CONNECTION_ACCEPTED;
             reset_http_session_state(sess);

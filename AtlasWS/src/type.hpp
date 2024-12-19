@@ -156,6 +156,8 @@ namespace atlas {
 
         void *upgraded_proto_data;
 
+        bool ev_added;
+
         struct {
             std::string client_rx_buffer;
             std::string client_tx_buffer;
