@@ -159,7 +159,6 @@ namespace atlas {
     void server_tick(server* server_instance) {
 #ifdef __linux__
 
-
         server_instance->ev_fd = epoll_create1(0);
         if (server_instance->ev_fd == -1) {
             perror("epoll_create1");
@@ -177,14 +176,23 @@ namespace atlas {
         struct epoll_event events[server_instance->max_concurrent_requests];
 
         while (true) {
-            int n = epoll_wait(server_instance->ev_fd, events, server_instance->max_concurrent_requests, -1);
-            for (int i = 0; i < n; i++) {
-                if (events[i].data.fd == server_instance->sockfd) {
+            server_instance->curr_rtime = time();
+
+            int nfds = epoll_wait(server_instance->ev_fd, events, server_instance->max_concurrent_requests, server_instance->ev_fd_timeout.tv_sec * 1000 + server_instance->ev_fd_timeout.tv_nsec / 1000000);
+            if (nfds == -1) {
+                perror("epoll_wait");
+                exit(EXIT_FAILURE);
+            }
+            else if (nfds == 0) {
+                socket_tick_all(server_instance, server_instance->sessions);
+                continue;
+            }
+
+            for (int i = 0; i < nfds; i++) {
+                if (events[i].data.fd == server_instance->sockfd)
                     try_accept(server_instance);
-                }
-                else {
-                    socket_tick(server_instance, server_instance->sessions); // Handle socket I/O
-                }
+                else
+                    socket_tick_one(server_instance, server_instance->sessions[events[i].data.fd]);
             }
         }
 
