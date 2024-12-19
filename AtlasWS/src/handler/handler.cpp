@@ -7,7 +7,7 @@ namespace atlas {
 #ifdef __linux__
 
        struct epoll_event event;
-    event.data.fd = sess.client_fd;
+    event.data.ptr = &sess;
     event.events = EPOLLET;
     if (want_read) {
         event.events |= EPOLLIN;
@@ -199,7 +199,7 @@ namespace atlas {
                 if (events[i].data.fd == server_instance->sockfd)
                     try_accept(server_instance);
                 else
-                    socket_tick_one(server_instance, server_instance->sessions[events[i].data.fd]);
+                    socket_tick_one(server_instance, *(http_session*)events[i].data.ptr);
             }
         }
 
